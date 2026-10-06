@@ -1,0 +1,58 @@
+export interface TriviaItem {
+  id: string;
+  topic: string;
+  question: string;
+  answers: string[];
+  correct: number;
+}
+
+export const TRIVIA: TriviaItem[] = [
+  { id: 't1', topic: 'Animals', question: 'Which animal is known for building dams?', answers: ['Beaver', 'Otter', 'Mole', 'Badger'], correct: 0 },
+  { id: 't2', topic: 'Food', question: 'Which fruit has its seeds on the outside?', answers: ['Strawberry', 'Blueberry', 'Raspberry', 'Cherry'], correct: 0 },
+  { id: 't3', topic: 'Geography', question: 'Which continent is the Sahara Desert mostly in?', answers: ['Africa', 'Asia', 'Australia', 'South America'], correct: 0 },
+  { id: 't4', topic: 'Science', question: 'What planet is known for its bright rings?', answers: ['Saturn', 'Mars', 'Venus', 'Mercury'], correct: 0 },
+  { id: 't5', topic: 'Food', question: 'Which spice is made from dried orchid pods?', answers: ['Vanilla', 'Cinnamon', 'Clove', 'Nutmeg'], correct: 0 },
+  { id: 't6', topic: 'Animals', question: 'How many legs does a spider have?', answers: ['Eight', 'Six', 'Ten', 'Twelve'], correct: 0 },
+  { id: 't7', topic: 'Technology', question: 'What does “USB” plug into?', answers: ['A computer port', 'A water pipe', 'A light socket', 'A guitar'], correct: 0 },
+  { id: 't8', topic: 'Movies', question: 'Which film features a snowman named Olaf?', answers: ['Frozen', 'Moana', 'Tangled', 'Brave'], correct: 0 },
+  { id: 't9', topic: 'History', question: 'The pyramids of Giza are in which country?', answers: ['Egypt', 'Peru', 'Mexico', 'Sudan'], correct: 0 },
+  { id: 't10', topic: 'Everyday', question: 'How many minutes are in one hour?', answers: ['60', '100', '90', '45'], correct: 0 },
+  { id: 't11', topic: 'Geography', question: 'Which ocean is the largest?', answers: ['Pacific', 'Atlantic', 'Indian', 'Arctic'], correct: 0 },
+  { id: 't12', topic: 'Animals', question: 'Which bird cannot fly but can swim?', answers: ['Penguin', 'Sparrow', 'Robin', 'Seagull'], correct: 0 },
+  { id: 't13', topic: 'Food', question: 'Tofu is made from which bean?', answers: ['Soy', 'Kidney', 'Black', 'Pinto'], correct: 0 },
+  { id: 't14', topic: 'Science', question: 'Water boils at 100 degrees on which scale?', answers: ['Celsius', 'Fahrenheit', 'Kelvin', 'Rankine'], correct: 0 },
+  { id: 't15', topic: 'Technology', question: 'Which device is used to type?', answers: ['Keyboard', 'Monitor', 'Speaker', 'Printer'], correct: 0 },
+  { id: 't16', topic: 'Movies', question: 'Which story features a wooden boy named Pinocchio?', answers: ['Pinocchio', 'Aladdin', 'Cinderella', 'Mulan'], correct: 0 },
+  { id: 't17', topic: 'History', question: 'Paper was first widely made in which country?', answers: ['China', 'Italy', 'Egypt', 'Greece'], correct: 0 },
+  { id: 't18', topic: 'Everyday', question: 'How many days are in a leap year?', answers: ['366', '365', '364', '367'], correct: 0 },
+  { id: 't19', topic: 'Animals', question: 'A group of wolves is called a…', answers: ['Pack', 'Flock', 'School', 'Herd'], correct: 0 },
+  { id: 't20', topic: 'Food', question: 'Which grain is used to make risotto?', answers: ['Rice', 'Wheat', 'Oats', 'Barley'], correct: 0 },
+  { id: 't21', topic: 'Geography', question: 'Mount Fuji is in which country?', answers: ['Japan', 'China', 'Korea', 'Nepal'], correct: 0 },
+  { id: 't22', topic: 'Science', question: 'Which gas do plants take in?', answers: ['Carbon dioxide', 'Oxygen', 'Helium', 'Hydrogen'], correct: 0 },
+  { id: 't23', topic: 'Technology', question: 'A file ending in .jpg is usually…', answers: ['An image', 'A song', 'A video', 'A spreadsheet'], correct: 0 },
+  { id: 't24', topic: 'Movies', question: 'Which character lives in a pineapple under the sea?', answers: ['SpongeBob', 'Patrick', 'Squidward', 'Mr. Krabs'], correct: 0 },
+  { id: 't25', topic: 'History', question: 'The Eiffel Tower is in which city?', answers: ['Paris', 'Rome', 'London', 'Madrid'], correct: 0 },
+  { id: 't26', topic: 'Everyday', question: 'Which tool is used to measure temperature?', answers: ['Thermometer', 'Ruler', 'Scale', 'Compass'], correct: 0 },
+  { id: 't27', topic: 'Animals', question: 'Which animal sleeps hanging upside down?', answers: ['Bat', 'Koala', 'Sloth', 'Raccoon'], correct: 0 },
+  { id: 't28', topic: 'Food', question: 'Guacamole is mainly made from…', answers: ['Avocado', 'Tomato', 'Peas', 'Beans'], correct: 0 },
+  { id: 't29', topic: 'Geography', question: 'Which river runs through Cairo?', answers: ['Nile', 'Amazon', 'Danube', 'Thames'], correct: 0 },
+  { id: 't30', topic: 'Science', question: 'The moon orbits which planet?', answers: ['Earth', 'Mars', 'Venus', 'Jupiter'], correct: 0 },
+  { id: 't31', topic: 'Technology', question: 'Wi-Fi is used for…', answers: ['Wireless internet', 'Cooking', 'Printing ink', 'Charging fuel'], correct: 0 },
+  { id: 't32', topic: 'Movies', question: 'Which toy cowboy appears in Toy Story?', answers: ['Woody', 'Buzz', 'Rex', 'Hamm'], correct: 0 },
+  { id: 't33', topic: 'History', question: 'Ancient Olympic games began in…', answers: ['Greece', 'Rome', 'Egypt', 'Spain'], correct: 0 },
+  { id: 't34', topic: 'Everyday', question: 'A dozen means how many?', answers: ['12', '10', '6', '24'], correct: 0 },
+  { id: 't35', topic: 'Animals', question: 'Which sea creature has eight arms?', answers: ['Octopus', 'Crab', 'Shrimp', 'Starfish'], correct: 0 },
+  { id: 't36', topic: 'Food', question: 'Bread is mainly made from…', answers: ['Flour', 'Rice', 'Corn oil', 'Sugar cane'], correct: 0 },
+  { id: 't37', topic: 'Geography', question: 'Iceland is closest to which ocean current region?', answers: ['North Atlantic', 'South Pacific', 'Indian', 'Arctic inland sea'], correct: 0 },
+  { id: 't38', topic: 'Science', question: 'Snowflakes are made of…', answers: ['Ice crystals', 'Salt', 'Sand', 'Cotton'], correct: 0 },
+  { id: 't39', topic: 'Technology', question: 'A touchscreen responds to…', answers: ['Touch', 'Voice only', 'Heat only', 'Light only'], correct: 0 },
+  { id: 't40', topic: 'Everyday', question: 'Which month has 28 days in a common year?', answers: ['February', 'January', 'June', 'April'], correct: 0 },
+  { id: 't41', topic: 'Animals', question: 'Kangaroos are native to…', answers: ['Australia', 'Africa', 'India', 'Brazil'], correct: 0 },
+  { id: 't42', topic: 'Food', question: 'Espresso is a type of…', answers: ['Coffee', 'Tea', 'Juice', 'Soda'], correct: 0 },
+  { id: 't43', topic: 'Geography', question: 'The Grand Canyon is in which country?', answers: ['United States', 'Canada', 'Chile', 'France'], correct: 0 },
+  { id: 't44', topic: 'Science', question: 'Rainbows appear when sunlight meets…', answers: ['Rain', 'Snow', 'Wind', 'Fog only'], correct: 0 },
+  { id: 't45', topic: 'History', question: 'Clocks with hands show time using…', answers: ['Hour and minute hands', 'Sand only', 'Water only', 'Candles'], correct: 0 },
+  { id: 't46', topic: 'Everyday', question: 'A library is mainly for…', answers: ['Books', 'Tools', 'Groceries', 'Clothes'], correct: 0 },
+  { id: 't47', topic: 'Movies', question: 'A documentary film usually…', answers: ['Shows real life', 'Is fully animated fantasy', 'Has no picture', 'Is a commercial'], correct: 0 },
+  { id: 't48', topic: 'Food', question: 'Honey is made by…', answers: ['Bees', 'Ants', 'Wasps only', 'Butterflies'], correct: 0 },
+];
