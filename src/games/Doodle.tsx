@@ -18,10 +18,14 @@ export function DoodleGame({ onBack }: { onBack: () => void }) {
   const strokesRef = useRef<Stroke[]>([]);
   const redoRef = useRef<Stroke[]>([]);
   const currentRef = useRef<Stroke | null>(null);
+  const activeTouchRef = useRef<number | null>(null);
   const [color, setColor] = useState(PEN_COLORS[0]);
   const [size, setSize] = useState(6);
   const [eraser, setEraser] = useState(false);
   const [, bump] = useState(0);
+  // mirror of the active tool for native touch handlers (no stale closures)
+  const toolRef = useRef({ color: PEN_COLORS[0], size: 6, eraser: false });
+  toolRef.current = { color, size, eraser };
 
   const drawAll = () => {
     const canvas = canvasRef.current;
@@ -43,8 +47,8 @@ export function DoodleGame({ onBack }: { onBack: () => void }) {
     ctx.lineJoin = 'round';
     const render = (s: Stroke) => {
       if (s.points.length === 0) return;
-      ctx.globalCompositeOperation = s.eraser ? 'destination-over' : 'source-over';
-      // eraser: paint paper color over
+      // eraser paints paper color over previous strokes
+      ctx.globalCompositeOperation = 'source-over';
       ctx.strokeStyle = s.eraser ? '#FFFDF6' : s.color;
       ctx.lineWidth = s.eraser ? s.size * 2.2 : s.size;
       ctx.beginPath();
@@ -63,8 +67,6 @@ export function DoodleGame({ onBack }: { onBack: () => void }) {
       }
       ctx.stroke();
     };
-    // draw non-eraser first then eraser works as cover; simpler: draw in order with source-over using bg color
-    ctx.globalCompositeOperation = 'source-over';
     strokesRef.current.forEach(render);
     if (currentRef.current) render(currentRef.current);
   };
@@ -77,31 +79,106 @@ export function DoodleGame({ onBack }: { onBack: () => void }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const pos = (e: React.PointerEvent) => {
-    const canvas = canvasRef.current!;
-    const r = canvas.getBoundingClientRect();
-    return { x: e.clientX - r.left, y: e.clientY - r.top };
-  };
-
-  const down = (e: React.PointerEvent) => {
-    e.preventDefault();
-    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
-    currentRef.current = { color, size, eraser, points: [pos(e)] };
+  const beginStroke = (x: number, y: number) => {
+    const t = toolRef.current;
+    currentRef.current = { color: t.color, size: t.size, eraser: t.eraser, points: [{ x, y }] };
     drawAll();
   };
-  const move = (e: React.PointerEvent) => {
+  const extendStroke = (x: number, y: number) => {
     if (!currentRef.current) return;
-    e.preventDefault();
-    currentRef.current.points.push(pos(e));
+    currentRef.current.points.push({ x, y });
     drawAll();
   };
-  const up = () => {
+  const endStroke = () => {
     if (!currentRef.current) return;
     strokesRef.current.push(currentRef.current);
     currentRef.current = null;
     redoRef.current = [];
     bump((n) => n + 1);
     drawAll();
+  };
+
+  // Native non-passive touch handlers: the reliable path on iOS Safari,
+  // where pointermove streams can be interrupted (pointercancel) and
+  // React's root listeners can't preventDefault scrolling.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const point = (t: Touch) => {
+      const r = canvas.getBoundingClientRect();
+      return { x: t.clientX - r.left, y: t.clientY - r.top };
+    };
+    const onTouchStart = (e: TouchEvent) => {
+      e.preventDefault();
+      if (activeTouchRef.current !== null) return;
+      const t = e.changedTouches[0];
+      activeTouchRef.current = t.identifier;
+      const p = point(t);
+      beginStroke(p.x, p.y);
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+      if (activeTouchRef.current === null) return;
+      for (const t of Array.from(e.changedTouches)) {
+        if (t.identifier === activeTouchRef.current) {
+          const p = point(t);
+          extendStroke(p.x, p.y);
+        }
+      }
+    };
+    const onTouchEnd = (e: TouchEvent) => {
+      e.preventDefault();
+      for (const t of Array.from(e.changedTouches)) {
+        if (t.identifier === activeTouchRef.current) {
+          activeTouchRef.current = null;
+          endStroke();
+        }
+      }
+    };
+    canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+    canvas.addEventListener('touchend', onTouchEnd, { passive: false });
+    canvas.addEventListener('touchcancel', onTouchEnd, { passive: false });
+    return () => {
+      canvas.removeEventListener('touchstart', onTouchStart);
+      canvas.removeEventListener('touchmove', onTouchMove);
+      canvas.removeEventListener('touchend', onTouchEnd);
+      canvas.removeEventListener('touchcancel', onTouchEnd);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const pos = (e: React.PointerEvent) => {
+    const canvas = canvasRef.current!;
+    const r = canvas.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+
+  const isTouchPointer = (e: React.PointerEvent) => e.pointerType === 'touch';
+
+  const down = (e: React.PointerEvent) => {
+    // touch input is handled by the native touch handlers above
+    if (isTouchPointer(e)) return;
+    e.preventDefault();
+    try {
+      (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    } catch {
+      /* pointer capture unavailable — drawing still works */
+    }
+    const p = pos(e);
+    beginStroke(p.x, p.y);
+  };
+  const move = (e: React.PointerEvent) => {
+    if (isTouchPointer(e) || !currentRef.current) return;
+    e.preventDefault();
+    const p = pos(e);
+    extendStroke(p.x, p.y);
+  };
+  const up = (e?: React.PointerEvent) => {
+    // for mouse/pen, committing on leave keeps strokes tidy;
+    // touch pointers must NOT commit on leave (breaks iOS strokes)
+    if (e && isTouchPointer(e) && e.type === 'pointerleave') return;
+    endStroke();
   };
 
   const undo = () => {
@@ -143,13 +220,24 @@ export function DoodleGame({ onBack }: { onBack: () => void }) {
       <div ref={wrapRef}>
         <div
           className="overflow-hidden"
-          style={{ border: '1px solid var(--line)', borderRadius: 22, boxShadow: 'var(--shadow)', background: '#FFFDF6' }}
+          style={{
+            border: '1px solid var(--line)',
+            borderRadius: 22,
+            boxShadow: 'var(--shadow)',
+            background: '#FFFDF6',
+            touchAction: 'none',
+            overscrollBehavior: 'none',
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+          }}
         >
           <canvas
             ref={canvasRef}
             className="doodle block h-[340px] w-full cursor-crosshair sm:h-[420px]"
             aria-label="Drawing page"
             role="img"
+            style={{ touchAction: 'none', WebkitTouchCallout: 'none' }}
+            onContextMenu={(e) => e.preventDefault()}
             onPointerDown={down}
             onPointerMove={move}
             onPointerUp={up}
